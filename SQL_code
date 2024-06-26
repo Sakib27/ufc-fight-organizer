@@ -1,0 +1,34 @@
+CREATE TABLE Users (
+	UserID VARCHAR(9) PRIMARY KEY,
+	Email VARCHAR(100) UNIQUE NOT NULL,
+	Username VARCHAR(50) UNIQUE NOT NULL,
+	Name VARCHAR(100) NOT NULL,
+	HashedPW VARCHAR(255) NOT NULL,
+	dob DATE NOT NULL,
+	UserType VARCHAR(20) NOT NULL CHECK (user_type IN (‘fighter’, ‘admin’, ‘staff’, ‘attendee’));
+
+CREATE TABLE Fighters (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+	Nationality VARCHAR(50),
+	Weight NUMERIC(4,1),
+	Height NUMERIC(3,2),
+	Gender VARCHAR(50),
+	Salary NUMERIC(9,2)
+);
+
+
+CREATE TABLE Admins (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+	Salary NUMERIC(9,2)
+);
+
+CREATE TABLE Staff (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+	Salary NUMERIC(9,2)
+);
+
+CREATE TABLE Attendees (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+);
+
+
