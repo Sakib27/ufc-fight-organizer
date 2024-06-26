@@ -1,0 +1,81 @@
+CREATE TABLE Users (
+	UserID VARCHAR(9) PRIMARY KEY,
+	Email VARCHAR(100) UNIQUE NOT NULL,
+	Username VARCHAR(50) UNIQUE NOT NULL,
+	Name VARCHAR(100) NOT NULL,
+	HashedPW VARCHAR(255) NOT NULL,
+	dob DATE NOT NULL,
+	UserType VARCHAR(20) NOT NULL CHECK (user_type IN (‘fighter’, ‘admin’, ‘staff’, ‘attendee’));
+
+CREATE TABLE Fighters (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+	Nationality VARCHAR(50),
+	Weight NUMERIC(4,1),
+	Height NUMERIC(3,2),
+	Gender VARCHAR(50),
+	Salary NUMERIC(9,2)
+);
+
+
+CREATE TABLE Admins (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+	Salary NUMERIC(9,2)
+);
+
+CREATE TABLE Staff (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+	Salary NUMERIC(9,2)
+);
+
+CREATE TABLE Attendees (
+	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
+);
+
+CREATE TABLE Venues (
+	VenueID VARCHAR(9) PRIMARY KEY,
+	Name VARCHAR(100),
+	Address VARCHAR(100),
+	Contact Information VARCHAR(50),
+	Capacity INTEGER
+);
+
+CREATE TABLE Sponsor (
+	SponsorID VARCHAR(9),
+	Name VARCHAR(100),
+	Amount NUMERIC(9,2),
+	EventID REFERENCES Events(EventID),
+	PRIMARY KEY(SponsorID, EventID)
+);
+
+CREATE TABLE Event (
+	EventID VARCHAR(9) PRIMARY KEY,
+	FighterName1 VARCHAR(100) REFERENCES Users(Name) NOT NULL,
+	FighterName2 VARCHAR(100) REFERENCES Users(Name) NOT NULL,
+	WeightClass VARCHAR(50),
+	EventDate DATE NOT NULL,
+	Time TIME(0),
+	Location VARCHAR(9) REFERENCES Venues(Address)
+);
+
+CREATE TABLE Result (
+	EventID VARCHAR(9) REFERENCES Events(EventID) PRIMARY KEY,
+	Winner VARCHAR(100) REFERENCES Users(Name) NOT NULL,
+	Loser VARCHAR(100) REFERENCES Users(Name) NOT NULL,
+	Strikes INTEGER,
+	Round INTEGER,
+	Method VARCHAR(100)
+);
+
+CREATE TABLE Tickets (
+	TicketID VARCHAR(20),
+	EventID VARCHAR(9) REFERENCES Events(EventID),
+	AttendeeID VARCHAR(9) REFERENCES Attendess(UserID),
+	TicketType VARCHAR(20),
+	Price (6,2),
+	PRIMARY KEY(TicketID, EventID)	
+);
+
+
+
+
+	
