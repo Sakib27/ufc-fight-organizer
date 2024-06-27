@@ -13,13 +13,24 @@ def connect_to_db():
     )
     return conn
 
-def view_fighters(conn):
-    cur = conn.cursor() # create a cursor object using the connection
-    cur.execute("SELECT * FROM fighters") # execute the query
-    rows = cur.fetchall() # fetch all the rows
-    return rows
+def create_user(conn, username, password, user_type = 'attendee'): #TODO: figure out what we want the default user type to be
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO users (username, password, user_type) VALUES (%s, %s, %s)", 
+        (username, password, user_type)
+        )
+    conn.commit() 
+    
 
-def close_db(conn):
+def get_user(conn, username):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM users WHERE username = %s",
+        (username,)
+    )
+    return cur.fetchone()
+
+def close_connection(conn):
     conn.close() # close the connection
 
 
