@@ -5,7 +5,8 @@ CREATE TABLE Users (
 	Name VARCHAR(100) NOT NULL,
 	HashedPW VARCHAR(255) NOT NULL,
 	dob DATE NOT NULL,
-	UserType VARCHAR(20) NOT NULL CHECK (user_type IN (‘fighter’, ‘admin’, ‘staff’, ‘attendee’));
+	UserType VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE Fighters (
 	UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
