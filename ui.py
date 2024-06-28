@@ -33,6 +33,17 @@ def admin_menu():
     print('2. Assign Shifts')
     print('3. Approve Shift Swaps')
     print('4. Logout')
+    choice = input('Enter choice: ')
+    if choice == '1':
+        assign_role(conn)
+    elif choice == '2':
+        assign_shift(conn)
+    elif choice == '3':
+        approve_shift_swap(conn)
+    elif choice == '4':
+        close_connection(conn)
+    else:
+        print('Invalid choice')
 
 def organizer_menu():
     print('1. Schedule Event')
@@ -67,4 +78,10 @@ def run_ui():
         print('Invalid username or password')
     close_connection(conn)
 
+
+def assign_role(conn):
+    username = input('Enter username: ')
+    user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
+    set_user_role(conn, username, user_type)
+    print(f'assigned {username} as {user_type}')
 

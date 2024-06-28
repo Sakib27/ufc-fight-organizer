@@ -30,6 +30,21 @@ def get_user(conn, username):
     )
     return cur.fetchone()
 
+def set_user_type(conn, username, user_type):
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE users SET user_type = %s WHERE username = %s",
+        (user_type, username)
+    )
+    conn.commit()
+
+def get_all_users(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM users"
+    )
+    return cur.fetchall()
+
 def close_connection(conn):
     conn.close() # close the connection
 
