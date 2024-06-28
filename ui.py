@@ -47,7 +47,7 @@ def fighter_menu():
 
 def run_ui():
     conn = connect_to_db()
-    usrename, password = prompt_login()
+    username, password = prompt_login()
     user = authenticate_user(conn, username, password)
     if user: 
         user_type = user[3] # user[3] is the user_type
