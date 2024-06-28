@@ -5,9 +5,9 @@ from psycopg2 import sql
 
 def connect_to_db():
     conn = psycopg2.connect(
-        dbname='deds', #TODO: change this to the name of the database
+        dbname= 'SQL_code', #TODO: change this to the name of the database
         user = 'postgres',
-        password = 'password', #TODO: change this to the password of the database
+        password = 'panzer123', #TODO: change this to the password of the database
         host = 'localhost',
         port = '5432'
     )
