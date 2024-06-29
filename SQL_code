@@ -40,7 +40,7 @@ CREATE TABLE Venues (
 	Capacity INTEGER
 );
 
-CREATE TABLE Sponsor (
+CREATE TABLE Sponsors (
 	SponsorID VARCHAR(9),
 	Name VARCHAR(100),
 	Amount NUMERIC(9,2),
@@ -48,7 +48,7 @@ CREATE TABLE Sponsor (
 	PRIMARY KEY(SponsorID, EventID)
 );
 
-CREATE TABLE Event (
+CREATE TABLE Events (
 	EventID VARCHAR(9) PRIMARY KEY,
 	FighterName1 VARCHAR(100) REFERENCES Users(Name) NOT NULL,
 	FighterName2 VARCHAR(100) REFERENCES Users(Name) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE Tickets (
 	EventID VARCHAR(9) REFERENCES Events(EventID),
 	AttendeeID VARCHAR(9) REFERENCES Attendess(UserID),
 	TicketType VARCHAR(20),
-	Price (6,2),
+	Price NUMERIC (6,2),
 	PRIMARY KEY(TicketID, EventID)	
 );
 
