@@ -49,6 +49,3 @@ def get_all_users(conn):
 
 def close_connection(conn):
     conn.close() # close the connection
-
-
-
