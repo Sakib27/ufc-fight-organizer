@@ -17,14 +17,14 @@ def connect_to_db():
 
 
 
-def create_user(conn, username, password, user_type = 'attendee'): #TODO: figure out what we want the default user type to be
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO users (username, password, user_type) VALUES (%s, %s, %s)", 
-        (username, password, user_type)
-        )
-    conn.commit() 
-    
+def create_user(conn, user_id, email, username, full_name, hashed_pw, dob):
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO users (user_id, email, username, full_name, password, dob) VALUES (%s, %s, %s, %s, %s, %s)",
+        (user_id, email, username, full_name, hashed_pw, dob)
+    )
+    conn.commit()
+    cursor.close()    
 
 def get_user(conn, username):
     cur = conn.cursor()

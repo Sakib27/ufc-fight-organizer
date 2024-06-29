@@ -2,18 +2,70 @@
 
 from prettytable import PrettyTable
 import database
-from database import connect_to_db, get_user, close_connection
+from database import connect_to_db, get_user, create_user, close_connection
 
 def prompt_login():
     user = input('Username: ')
     password = input('Password: ')
     return user, password
 
+def prompt_signup():
+    user_id = input('UserID: ')
+    email = input('Email: ')
+    username = input('Username: ')
+    full_name = input('Full Name: ')
+    hashed_pw = input('Password: ')  
+    dob = input('Date of Birth (YYYY-MM-DD): ')
+    return user_id, email, username, full_name, hashed_pw, dob
+
 def authenticate_user(conn, username, password):
     user = get_user(conn, username)
     if user and user[2] == password: # user[2] is the password
         return user
     return None
+
+def assign_role(conn):
+    username = input('Enter username: ')
+    user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
+    set_user_role(conn, username, user_type)
+    print(f'assigned {username} as {user_type}')
+
+# def assign_shift(conn):
+
+# def approve_shift_swap(conn):
+
+# def create_event(conn):
+
+# def manage_sponsors(conn):
+
+# def approve_fight_requests(conn):
+
+# def view_fight_schedule(conn):
+
+# def view_upcoming_fights(conn):
+
+# def request_fight(conn):
+
+# def buy_tickets(conn):
+
+# def view_purchased_tickets(conn):
+
+# def buy_more_tickets(conn):
+
+# def sell_tickets(conn):
+
+# def view_shifts(conn):
+
+# def view_venue_assignments(conn):
+
+# def swap_shifts(conn):
+
+# def logout(conn):
+
+def main_menu():
+    print('1. Login')
+    print('2. Signup')
+    print('3. Exit')
 
 def attendee_menu():
     print('1. Buy Tickets')
@@ -58,30 +110,37 @@ def fighter_menu():
 
 def run_ui():
     conn = connect_to_db()
-    username, password = prompt_login()
-    user = authenticate_user(conn, username, password)
-    if user: 
-        user_type = user[3] # user[3] is the user_type
-        if user_type == 'attendee':
-            attendee_menu()
-        elif user_type == 'staff':
-            staff_menu()
-        elif user_type == 'admin':
-            admin_menu()
-        elif user_type == 'organizer':
-            organizer_menu()
-        elif user_type == 'fighter':
-            fighter_menu()
+    while True:
+        main_menu()
+        choice = input('Enter choice: ')
+        if choice == '1':
+            username, password = prompt_login()
+            user = authenticate_user(conn, username, password)
+            if user:
+                user_type = user[3]  # user[3] is the user_type
+                if user_type == 'attendee':
+                    attendee_menu()
+                elif user_type == 'staff':
+                    staff_menu()
+                elif user_type == 'admin':
+                    admin_menu(conn)
+                elif user_type == 'organizer':
+                    organizer_menu()
+                elif user_type == 'fighter':
+                    fighter_menu()
+                else:
+                    print('You are currently not a user')
+            else:
+                print('Invalid username or password')
+        elif choice == '2':
+            user_id, email, username, full_name, hashed_pw, dob = prompt_signup()
+            create_user(conn, user_id, email, username, full_name, hashed_pw, dob)
+            print('User created successfully!')
+        elif choice == '3':
+            break
         else:
-            print('You are currently not a user')
-    else:
-        print('Invalid username or password')
+            print('Invalid choice')
     close_connection(conn)
 
-
-def assign_role(conn):
-    username = input('Enter username: ')
-    user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
-    set_user_role(conn, username, user_type)
-    print(f'assigned {username} as {user_type}')
-
+# if __name__ == '__main__':
+#     run_ui()
