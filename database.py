@@ -7,7 +7,7 @@ from getpass import getpass # getpass is a function that will hide the password 
 
 def connect_to_db():
     conn = psycopg2.connect(
-        dbname= 'SQL_code', #TODO: change this to the name of the database
+        dbname= 'mma-system', #TODO: change this to the name of the database
         user = 'postgres',
         password = 'panzer123', #TODO: change this to the password of the database
         host = 'localhost',
