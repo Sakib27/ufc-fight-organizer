@@ -15,8 +15,6 @@ def connect_to_db():
     )
     return conn
 
-
-
 def create_user(conn, user_id, email, username, full_name, hashed_pw, dob):
     cursor = conn.cursor()
     cursor.execute(
