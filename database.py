@@ -1,7 +1,9 @@
 # This file handles the database connection and queries 
 
 import psycopg2
-from psycopg2 import sql
+from psycopg2 import connect
+from getpass import getpass # getpass is a function that will hide the password when the user types it in
+
 
 def connect_to_db():
     conn = psycopg2.connect(
@@ -12,6 +14,8 @@ def connect_to_db():
         port = '5432'
     )
     return conn
+
+
 
 def create_user(conn, username, password, user_type = 'attendee'): #TODO: figure out what we want the default user type to be
     cur = conn.cursor()
