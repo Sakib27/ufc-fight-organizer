@@ -25,7 +25,7 @@ def get_user(conn, username):
     cur = conn.cursor()
     cur.execute(
         "SELECT * FROM users WHERE username = %s",
-        (username,)
+        (username)
     )
     return cur.fetchone()
 

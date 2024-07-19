@@ -1,6 +1,6 @@
 from prettytable import PrettyTable
-import database
-from database import connect_to_db, get_user, create_user, close_connection, set_user_type
+import database2
+from database2 import connect_to_db, get_user, create_user, close_connection, set_user_type
 import hashlib
 
 def prompt_login():

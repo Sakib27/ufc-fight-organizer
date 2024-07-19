@@ -1,35 +1,54 @@
 # This file is the user interface for the application
 
 from prettytable import PrettyTable
-import database
-from database import connect_to_db, get_user, create_user, close_connection, get_user_by_login, set_user_type
+import database, database2 
+from database import connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login
+import hashlib
 
-def prompt_login():
-    user = input('Username: ')
-    password = input('Password: ')
-    user = get_user_by_login(user, password) # TODO: Some error here
-    return user, password
-
-def prompt_signup():
+# def prompt_login(user, password):
+#     user = input('Username: ')
+#     password = input('Password: ')
+#     hashed_pw = hashlib.sha256(password.encode()).hexdigest()  # saving the passwords as hashed values in the database
+    # get_user_by_login(user, hashed_pw) 
+    # if user:
+    #     print(f"Welcome!")
+    #     return user, hashed_pw
+    # else:
+    #     print("Invalid credentials, please try again.")
+    #     return None
+    # return user, hashed_pw
+  
+def account_create(conn, user_type='attendee'):
     user_id = input('UserID: ')
-    email = input('Email: ')
+    email = input('Email: ')  # TODO: maybe add checks for email format
     username = input('Username: ')
     full_name = input('Full Name: ')
-    hashed_pw = input('Password: ')  
+    password = input('Password: ')
+    hashed_pw = hashlib.sha256(password.encode()).hexdigest()  # saving the passwords as hashed values in the database
     dob = input('Date of Birth (YYYY-MM-DD): ')
-    return user_id, email, username, full_name, hashed_pw, dob
 
-def authenticate_user(conn, username, password):
-    user = get_user(conn, username)
-    if user and user[2] == password: # user[2] is the password
-        return user
-    return None
+    # Directly insert the new user into the users table
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO users ("UserID", "Email", "Username", "Full_Name", "HashedPW", "dob", "UserType")
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+    """, (user_id, email, username, full_name, hashed_pw, dob, user_type))
+    conn.commit()
+    cur.close()
+    
+    print(f'{user_type.capitalize()} account created successfully')
 
-def assign_role(conn):
-    username = input('Enter username: ')
-    user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
-    set_user_type(conn, username, user_type)
-    print(f'assigned {username} as {user_type}')
+# def authenticate_user(conn, username, password):
+#     user = get_user(conn, username)
+#     if user and user[2] == password: # user[2] is the password
+#         return user
+#     return None
+
+# def assign_role(conn):
+#     username = input('Enter username: ')
+#     user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
+#     set_user_type(conn, username, user_type)
+#     print(f'assigned {username} as {user_type}')
 
 # def assign_shift(conn):
 
@@ -67,6 +86,7 @@ def main_menu():
     print('1. Login')
     print('2. Signup')
     print('3. Exit')
+    print('\n') # newline
 
 def attendee_menu():
     while True:
@@ -75,6 +95,7 @@ def attendee_menu():
         print('3. Buy More Ticekts')
         print('4. Sell Tickets')
         print('5. Logout')
+        print('\n') # newline
         choice = input('Enter choice: ')
 
         if choice == '1':
@@ -97,6 +118,7 @@ def staff_menu():
         print('2. View Venue Assignments')
         print('3. Swap Shifts')
         print('4. Logout')
+        print('\n') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -116,6 +138,7 @@ def admin_menu():
         print('2. Assign Shifts')
         print('3. Approve Shift Swaps')
         print('4. Logout')
+        print('\n') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -135,6 +158,7 @@ def organizer_menu():
         print('2. Manage Sponsors')
         print('3. Approve Fight Requests')
         print('4. Logout')
+        print('\n') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -170,36 +194,72 @@ def fighter_menu():
 
 def run_ui():
     conn = connect_to_db()
-    while True:
-        main_menu()
-        choice = input('Enter choice: ')
-        if choice == '1':
-            username, password = prompt_login() # TODO: Some error here
-            user = authenticate_user(conn, username, password)
-            if user:
-                user_type = user[3]  # user[3] is the user_type
-                if user_type == 'attendee':
+    # while True:
+    main_menu()
+    choice = input('Enter choice: ')
+    print('\n') # newline
+    if choice == '1':
+        username = input("Username: ")
+        password = input("Password: ")
+        print('\n') # newline
+        user = get_user(conn, username)
+        if user and hashlib.sha256(password.encode()).hexdigest() == user[4]: # user[4] is the password
+            print(f'Welcome {user[3]}!')
+            print('\n') # newline
+            if user[6].lower() == 'attendee':
+                while True:
                     attendee_menu()
-                elif user_type == 'staff':
+                    attendee_choice = input('Select an option: ')
+                    if attendee_choice == '4':
+                        break
+            elif user[6].lower() == 'staff':
+                while True:
                     staff_menu()
-                elif user_type == 'admin':
-                    admin_menu(conn)
-                elif user_type == 'organizer':
+                    staff_choice = input('Select an option: ')
+                    if staff_choice == '4':
+                        break
+            elif user[6].lower() == 'admin':
+                while True:
+                    admin_menu()
+                    admin_choice = input('Select an option: ')
+                    if admin_choice == '5':
+                        break
+                    elif admin_choice == '4':
+                        print("Create account for:")
+                        print("1. Fighter")
+                        print("2. Staff")
+                        print("3. Organizer")
+                        role_choice = input('Select an option: ')
+                        if role_choice == '1':
+                            account_create(conn, 'fighter')
+                        elif role_choice == '2':
+                            account_create(conn, 'staff')
+                        elif role_choice == '3':
+                            account_create(conn, 'organizer')
+                        else:
+                            print('Invalid choice')
+                    elif admin_choice == '4':
+                        break
+            elif user[6].lower() == 'organizer':
+                while True:
                     organizer_menu()
-                elif user_type == 'fighter':
+                    organizer_choice = input('Select an option: ')
+                    if organizer_choice == '4':
+                        break
+            elif user[6].lower() == 'fighter':
+                while True:
                     fighter_menu()
-                else:
-                    print('You are currently not a user')
-            else:
-                print('Invalid username or password')
-        elif choice == '2':
-            user_id, email, username, full_name, hashed_pw, dob = prompt_signup()
-            create_user(conn, user_id, email, username, full_name, hashed_pw, dob)
-            print('User created successfully!')
-        elif choice == '3':
-            break
+                    fighter_choice = input('Select an option: ')
+                    if fighter_choice == '4':
+                        break
         else:
-            print('Invalid choice')
+            print('Invalid username or password')
+    elif choice == '2':
+        account_create(conn)
+    elif choice == '3':
+        return
+    else:
+        print('Invalid choice')
     close_connection(conn)
 
 # if __name__ == '__main__':

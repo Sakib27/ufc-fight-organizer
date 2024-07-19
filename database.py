@@ -15,14 +15,14 @@ def connect_to_db():
     )
     return conn
 
-def create_user(conn, user_id, email, username, full_name, hashed_pw, dob):
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO users (user_id, email, username, full_name, password, dob) VALUES (%s, %s, %s, %s, %s, %s)",
-        (user_id, email, username, full_name, hashed_pw, dob)
-    )
+def create_user(conn, user_id, email, username, full_name, hashed_pw, dob, user_type='attendee'):
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO users ("UserID", "Email", "Username", "Full_Name", "HashedPW", "dob", "UserType")
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+    """, (user_id, email, username, full_name, hashed_pw, dob, user_type))
     conn.commit()
-    cursor.close()    
+    cur.close()
 
 def get_user(conn, username):
     cur = conn.cursor()
@@ -30,13 +30,13 @@ def get_user(conn, username):
         "SELECT * FROM users WHERE username = %s",
         (username,)
     )
-    return cur.fetchone()
+    return cur.fetchone() 
 
 def get_user_by_login(username, password):
     conn = connect_to_db()
     cur = conn.cursor()
     cur.execute(
-        "SELECT * FROM users WHERE username = %s AND password = %s",
+        "SELECT * FROM users WHERE username = %s AND HashedPW = %s",
         (username, password)
     )
      
