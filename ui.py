@@ -28,7 +28,7 @@ def authenticate_user(conn, username, password):
 def assign_role(conn):
     username = input('Enter username: ')
     user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
-    set_user_role(conn, username, user_type)
+    set_user_type(conn, username, user_type)
     print(f'assigned {username} as {user_type}')
 
 # def assign_shift(conn):
