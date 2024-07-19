@@ -32,6 +32,15 @@ def get_user(conn, username):
     )
     return cur.fetchone()
 
+def get_user_by_login(username, password):
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM users WHERE username = %s AND password = %s",
+        (username, password)
+    )
+     
+
 def set_user_type(conn, username, user_type):
     cur = conn.cursor()
     cur.execute(

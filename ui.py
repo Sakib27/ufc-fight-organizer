@@ -2,11 +2,12 @@
 
 from prettytable import PrettyTable
 import database
-from database import connect_to_db, get_user, create_user, close_connection
+from database import connect_to_db, get_user, create_user, close_connection, get_user_by_login, set_user_type
 
 def prompt_login():
     user = input('Username: ')
     password = input('Password: ')
+    user = get_user_by_login(user, password) # TODO: Some error here
     return user, password
 
 def prompt_signup():
@@ -68,45 +69,104 @@ def main_menu():
     print('3. Exit')
 
 def attendee_menu():
-    print('1. Buy Tickets')
-    print('2. View Purchased Tickets')
-    print('3. Buy More Ticekts')
-    print('4. Sell Tickets')
-    print('5. Logout')
+    while True:
+        print('1. Buy Tickets')
+        print('2. View Purchased Tickets')
+        print('3. Buy More Ticekts')
+        print('4. Sell Tickets')
+        print('5. Logout')
+        choice = input('Enter choice: ')
+
+        if choice == '1':
+            buy_tickets(conn)
+        elif choice == '2':
+            view_purchased_tickets(conn)
+        elif choice == '3':
+            buy_more_tickets(conn)
+        elif choice == '4':
+            sell_tickets(conn)
+        elif choice == '5':
+            close_connection(conn)
+        else:
+            print('Invalid choice')
+
 
 def staff_menu():
-    print('1. View Shifts')
-    print('2. View Venue Assignments')
-    print('3. Swap Shifts')
-    print('4. Logout')
+    while True:
+        print('1. View Shifts')
+        print('2. View Venue Assignments')
+        print('3. Swap Shifts')
+        print('4. Logout')
+        # running the function corresponding to the choice
+        choice = input('Enter choice: ')
+        if choice == '1':
+            view_shifts(conn)
+        elif choice == '2':
+            view_venue_assignments(conn)
+        elif choice == '3':
+            swap_shifts(conn)
+        elif choice == '4':
+            close_connection(conn)
+        else:
+            print('Invalid choice')
 
 def admin_menu():
-    print('1. Assign User Roles')
-    print('2. Assign Shifts')
-    print('3. Approve Shift Swaps')
-    print('4. Logout')
-    choice = input('Enter choice: ')
-    if choice == '1':
-        assign_role(conn)
-    elif choice == '2':
-        assign_shift(conn)
-    elif choice == '3':
-        approve_shift_swap(conn)
-    elif choice == '4':
-        close_connection(conn)
-    else:
-        print('Invalid choice')
+    while True:
+        print('1. Assign User Roles')
+        print('2. Assign Shifts')
+        print('3. Approve Shift Swaps')
+        print('4. Logout')
+        # running the function corresponding to the choice
+        choice = input('Enter choice: ')
+        if choice == '1':
+            assign_role(conn)
+        elif choice == '2':
+            assign_shift(conn)
+        elif choice == '3':
+            approve_shift_swap(conn)
+        elif choice == '4':
+            close_connection(conn)
+        else:
+            print('Invalid choice')
 
 def organizer_menu():
-    print('1. Schedule Event')
-    print('2. Manage Sponsors')
-    print('3. Approve Fight Requests')
+    while True:
+        print('1. Schedule Event')
+        print('2. Manage Sponsors')
+        print('3. Approve Fight Requests')
+        print('4. Logout')
+        # running the function corresponding to the choice
+        choice = input('Enter choice: ')
+        if choice == '1':
+            create_event(conn)
+        elif choice == '2':
+            manage_sponsors(conn)
+        elif choice == '3':
+            approve_fight_requests(conn)
+        elif choice == '4':
+            close_connection(conn)
+        else:
+            print('Invalid choice')
+
 
 def fighter_menu():
-    print('1. View Fight Schedule')
-    print('2. View Upcoming Fights')
-    print('3. Request Fight')
-    print('4. Logout')
+    while True:
+        print('1. View Fight Schedule')
+        print('2. View Upcoming Fights') 
+        print('3. Request Fight') #  TODO: make this into a view that appears only if the fighter has more than 10 fights so far
+        print('4. Logout')
+        # running the function corresponding to the choice
+        choice = input('Enter choice: ')
+        if choice == '1':
+            view_fight_schedule(conn)
+        elif choice == '2':
+            view_upcoming_fights(conn)
+        elif choice == '3':
+            request_fight(conn)
+        elif choice == '4':
+            close_connection(conn)
+        else:
+            print('Invalid choice')
 
 def run_ui():
     conn = connect_to_db()
@@ -114,7 +174,7 @@ def run_ui():
         main_menu()
         choice = input('Enter choice: ')
         if choice == '1':
-            username, password = prompt_login()
+            username, password = prompt_login() # TODO: Some error here
             user = authenticate_user(conn, username, password)
             if user:
                 user_type = user[3]  # user[3] is the user_type
