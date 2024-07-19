@@ -15,12 +15,12 @@ def connect_to_db():
     )
     return conn
 
-def create_user(conn, user_id, email, username, full_name, hashed_pw, dob, user_type='attendee'):
-    cur = conn.cursor()
+def create_user(conn, userid, email, username, name, hashedpw, dob, usertype ='attendee'):
+    cur = conn.cursor() 
     cur.execute("""
-        INSERT INTO users ("UserID", "Email", "Username", "Full_Name", "HashedPW", "dob", "UserType")
+        INSERT INTO users ("userid", "email", "username", "name", "hashedpw", "dob", "usertype")
         VALUES (%s, %s, %s, %s, %s, %s, %s);
-    """, (user_id, email, username, full_name, hashed_pw, dob, user_type))
+    """, (userid, email, username, name, hashedpw, dob, usertype))
     conn.commit()
     cur.close()
 
@@ -55,6 +55,14 @@ def get_all_users(conn):
         "SELECT * FROM users"
     )
     return cur.fetchall()
+
+def set_shift(conn, userid, eventid, starttime, endtime):
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO Shifts (userID, eventid, starttime, endtime) VALUES (%s, %s, %s, %s)",
+        (userid, eventid, starttime, endtime)
+    )
+    conn.commit()
 
 def close_connection(conn):
     conn.close() # close the connection

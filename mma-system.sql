@@ -11,8 +11,8 @@ CREATE TABLE Users (
 CREATE TABLE Fighters (
     UserID VARCHAR(9) PRIMARY KEY REFERENCES Users(UserID),
     Nationality VARCHAR(50),
-    Weight NUMERIC(4,1),
-    Height NUMERIC(3,2),
+    Weight INTEGER,
+    Height INTEGER,
     Gender VARCHAR(50),
     Salary NUMERIC(9,2)
 );
@@ -46,7 +46,7 @@ CREATE TABLE Events (
     WeightClass VARCHAR(50),
     EventDate DATE NOT NULL,
     Time TIME(0),
-    Location VARCHAR(9) REFERENCES Venues(VenueID)
+    Location VARCHAR(50) REFERENCES Venues(VenueID)
 );
 
 CREATE TABLE Sponsors (
@@ -73,4 +73,12 @@ CREATE TABLE Tickets (
     TicketType VARCHAR(20),
     Price NUMERIC(6,2),
     PRIMARY KEY(TicketID, EventID)
+);
+
+CREATE TABLE Shifts (
+    UserID VARCHAR(9) REFERENCES Users(UserID),
+    EventID VARCHAR(9) REFERENCES Events(EventID),
+    StartTime TIME(0),
+    EndTime TIME(0),
+    PRIMARY KEY (UserID, EventID)
 );

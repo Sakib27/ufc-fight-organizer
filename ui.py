@@ -1,8 +1,8 @@
 # This file is the user interface for the application
 
 from prettytable import PrettyTable
-import database, database2 
-from database import connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login
+import database
+from database import connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login, set_shift
 import hashlib
 
 # def prompt_login(user, password):
@@ -18,25 +18,26 @@ import hashlib
     #     return None
     # return user, hashed_pw
   
-def account_create(conn, user_type='attendee'):
-    user_id = input('UserID: ')
+def account_create(conn, usertype='attendee'):
+    cur = conn.cursor()
+    userid = input('UserID: ')
     email = input('Email: ')  # TODO: maybe add checks for email format
     username = input('Username: ')
-    full_name = input('Full Name: ')
+    name = input('Full Name: ')
     password = input('Password: ')
-    hashed_pw = hashlib.sha256(password.encode()).hexdigest()  # saving the passwords as hashed values in the database
+    hashedpw = hashlib.sha256(password.encode()).hexdigest()  # saving the passwords as hashed values in the database
     dob = input('Date of Birth (YYYY-MM-DD): ')
-
+    create_user(conn, userid, email, username, name, hashedpw, dob, usertype)
     # Directly insert the new user into the users table
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO users ("UserID", "Email", "Username", "Full_Name", "HashedPW", "dob", "UserType")
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
-    """, (user_id, email, username, full_name, hashed_pw, dob, user_type))
+    # cur = conn.cursor()
+    # cur.execute("""
+    #     INSERT INTO users ("UserID", "Email", "Username", "Full_Name", "HashedPW", "dob", "UserType")
+    #     VALUES (%s, %s, %s, %s, %s, %s, %s);
+    # """, (userid, email, username, name, hashedpw, dob, usertype))
     conn.commit()
     cur.close()
     
-    print(f'{user_type.capitalize()} account created successfully')
+    print(f'{usertype.capitalize()} account created successfully')
 
 # def authenticate_user(conn, username, password):
 #     user = get_user(conn, username)
@@ -50,7 +51,13 @@ def assign_role(conn):
     set_user_type(conn, username, user_type)
     print(f'assigned {username} as {user_type}')
 
-# def assign_shift(conn):
+def assign_shift(conn):
+    userid = input('Enter userID of staff: ')
+    eventid = input('Enter the EventID: ')
+    starttime = input('Enter the start time of the shift: ')
+    endtime = input('Enter the endtime of the shift: ')
+    set_shift(conn, userid, eventid, starttime, endtime)
+    print(f'Assigned shift to {userid} from {starttime} to {endtime}')
 
 # def approve_shift_swap(conn):
 
@@ -89,6 +96,7 @@ def main_menu():
     print('') # newline
 
 def attendee_menu():
+    conn = connect_to_db()
     while True:
         print('1. Buy Tickets')
         print('2. View Purchased Tickets')
@@ -113,6 +121,7 @@ def attendee_menu():
 
 
 def staff_menu():
+    conn = connect_to_db()
     while True:
         print('1. View Shifts')
         print('2. View Venue Assignments')
@@ -137,17 +146,19 @@ def admin_menu():
     while True:
         print('1. Assign User Roles')
         print('2. Assign Shifts')
-        print('3. Approve Shift Swaps')
+        print('3. View events')
         print('4. Logout')
         print('') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
             assign_role(conn)
+            print('') # newline
         elif choice == '2':
             assign_shift(conn)
+            print('') # newline
         elif choice == '3':
-            approve_shift_swap(conn)
+            approve_shift_swap(conn) # TODO: view events
         elif choice == '4':
             close_connection(conn)
             break
@@ -155,6 +166,7 @@ def admin_menu():
             print('Invalid choice')
 
 def organizer_menu():
+    conn = connect_to_db()
     while True:
         print('1. Schedule Event')
         print('2. Manage Sponsors')
@@ -176,6 +188,7 @@ def organizer_menu():
 
 
 def fighter_menu():
+    conn = connect_to_db()
     while True:
         print('1. View Fight Schedule')
         print('2. View Upcoming Fights') 

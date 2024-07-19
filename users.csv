@@ -1,14 +1,4 @@
-<<<<<<< HEAD
-UserID,Email,Username,Name,HashedPW,dob,UserType
-100000004,connormcflurry@gmail.com,notoriusflurry,Connor McFlurry,d1d3f70b8760c8e730e3b5cddd09b0a7224994227a1561ad992c9a902aacc7fc,7/14/1998,Fighter
-1,sadmansakib@gmail.com,sakib27,Sadman Sakib,77e4c00eadcffd9b33fa1184a0c7c206f61d6ac4c524a043fe0ee7233f9f7eec,5/4/1968,Admin
-2,joao.cortivo1@gmail.com,juniti21,Joao Luiz Dal Cortivo,6337a8e865d95b188f391a5c12d45f11eb15b4d1e9446857f63884d71381c3a9,2/10/2003,Admin
-100000006,mannypacman@gmail.com,pacman,Manny Pacman,d456dc7825e52bbc2b0fd871b288c98a1ddd5b16644f23536b0e41922c04d6fb,12/17/1978,Fighter
-100000001,andersonspider@outlook.com,asilva21,Anderson Silva,f77439cd8ce19ffbe9835c7dffc83c9c223fcc49f976fdfc9ae779299c70cd01,4/14/1975,Fighter
-100000008,seanstrickland@hotmail.com,seantarzan,Sean Strickland,ac645d1eaa3fc50c44dd538e81550276183f43518f976fdbb926142ed7e90dc8,2/27/1991,Fighter
-100000007,israeladesanya@gmail.com,avatar31,Israel Adesanya,7b04e2317d0cb7afbafb04dc33de9a1670a9ca91d9fe9f70917fa6512dc0eb7f,7/22/1989,Fighter
-=======
-UserID,Email,Username,Name,HashedPW,dob,UserType
+﻿UserID,Email,Username,Name,HashedPW,dob,UserType
 100000004,connormcflurry@gmail.com,notoriusflurry,Connor McFlurry,d1d3f70b8760c8e730e3b5cddd09b0a7224994227a1561ad992c9a902aacc7fc,7/14/1998,Fighter
 000000001,sadmansakib@gmail.com,sakib27,Sadman Sakib,77e4c00eadcffd9b33fa1184a0c7c206f61d6ac4c524a043fe0ee7233f9f7eec,5/4/1968,Admin
 000000002,joao.cortivo1@gmail.com,juniti21,Joao Luiz Dal Cortivo,6337a8e865d95b188f391a5c12d45f11eb15b4d1e9446857f63884d71381c3a9,2/10/2003,Admin
@@ -16,4 +6,4 @@ UserID,Email,Username,Name,HashedPW,dob,UserType
 100000001,andersonspider@outlook.com,asilva21,Anderson Silva,f77439cd8ce19ffbe9835c7dffc83c9c223fcc49f976fdfc9ae779299c70cd01,4/14/1975,Fighter
 100000008,seanstrickland@hotmail.com,seantarzan,Sean Strickland,ac645d1eaa3fc50c44dd538e81550276183f43518f976fdbb926142ed7e90dc8,2/27/1991,Fighter
 100000007,israeladesanya@gmail.com,avatar31,Israel Adesanya,7b04e2317d0cb7afbafb04dc33de9a1670a9ca91d9fe9f70917fa6512dc0eb7f,7/22/1989,Fighter
->>>>>>> cdbbb6a5bc760a99beeb664579bd3aab3e4e5892
+120000000,maahyr@gmail.com,maahyr1,Maahyr,f9d190585a4152b5194ee8dc5f502068e0c94c157aa8bd67d45c8c29b6c3b252,8/15/2000,Staff
