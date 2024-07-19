@@ -44,11 +44,11 @@ def account_create(conn, user_type='attendee'):
 #         return user
 #     return None
 
-# def assign_role(conn):
-#     username = input('Enter username: ')
-#     user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
-#     set_user_type(conn, username, user_type)
-#     print(f'assigned {username} as {user_type}')
+def assign_role(conn):
+    username = input('Enter username: ')
+    user_type = input('Enter new user type: (attendee, staff, admin, organizer, fighter) ')
+    set_user_type(conn, username, user_type)
+    print(f'assigned {username} as {user_type}')
 
 # def assign_shift(conn):
 
@@ -86,7 +86,7 @@ def main_menu():
     print('1. Login')
     print('2. Signup')
     print('3. Exit')
-    print('\n') # newline
+    print('') # newline
 
 def attendee_menu():
     while True:
@@ -95,7 +95,7 @@ def attendee_menu():
         print('3. Buy More Ticekts')
         print('4. Sell Tickets')
         print('5. Logout')
-        print('\n') # newline
+        print('') # newline
         choice = input('Enter choice: ')
 
         if choice == '1':
@@ -118,7 +118,7 @@ def staff_menu():
         print('2. View Venue Assignments')
         print('3. Swap Shifts')
         print('4. Logout')
-        print('\n') # newline
+        print('') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -133,12 +133,13 @@ def staff_menu():
             print('Invalid choice')
 
 def admin_menu():
+    conn = connect_to_db()
     while True:
         print('1. Assign User Roles')
         print('2. Assign Shifts')
         print('3. Approve Shift Swaps')
         print('4. Logout')
-        print('\n') # newline
+        print('') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -149,6 +150,7 @@ def admin_menu():
             approve_shift_swap(conn)
         elif choice == '4':
             close_connection(conn)
+            break
         else:
             print('Invalid choice')
 
@@ -158,7 +160,7 @@ def organizer_menu():
         print('2. Manage Sponsors')
         print('3. Approve Fight Requests')
         print('4. Logout')
-        print('\n') # newline
+        print('') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -179,6 +181,7 @@ def fighter_menu():
         print('2. View Upcoming Fights') 
         print('3. Request Fight') #  TODO: make this into a view that appears only if the fighter has more than 10 fights so far
         print('4. Logout')
+        print('') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
@@ -197,15 +200,15 @@ def run_ui():
     # while True:
     main_menu()
     choice = input('Enter choice: ')
-    print('\n') # newline
+    print('') # newline
     if choice == '1':
         username = input("Username: ")
         password = input("Password: ")
-        print('\n') # newline
+        print('') # newline
         user = get_user(conn, username)
         if user and hashlib.sha256(password.encode()).hexdigest() == user[4]: # user[4] is the password
             print(f'Welcome {user[3]}!')
-            print('\n') # newline
+            print('') # newline
             if user[6].lower() == 'attendee':
                 while True:
                     attendee_menu()
@@ -221,25 +224,26 @@ def run_ui():
             elif user[6].lower() == 'admin':
                 while True:
                     admin_menu()
-                    admin_choice = input('Select an option: ')
-                    if admin_choice == '5':
-                        break
-                    elif admin_choice == '4':
-                        print("Create account for:")
-                        print("1. Fighter")
-                        print("2. Staff")
-                        print("3. Organizer")
-                        role_choice = input('Select an option: ')
-                        if role_choice == '1':
-                            account_create(conn, 'fighter')
-                        elif role_choice == '2':
-                            account_create(conn, 'staff')
-                        elif role_choice == '3':
-                            account_create(conn, 'organizer')
-                        else:
-                            print('Invalid choice')
-                    elif admin_choice == '4':
-                        break
+                    break
+                    # admin_choice = input('Select an option: ')
+                    # if admin_choice == '4':
+                    #     break
+                    # elif admin_choice == '4':
+                    #     print("Create account for:")
+                    #     print("1. Fighter")
+                    #     print("2. Staff")
+                    #     print("3. Organizer")
+                    # role_choice = input('Select an option: ')
+                    # if role_choice == '1':
+                    #     account_create(conn, 'fighter')
+                    # elif role_choice == '2':
+                    #     account_create(conn, 'staff')
+                    # elif role_choice == '3':
+                    #     account_create(conn, 'organizer')
+                    # elif admin_choice == '4':
+                    #     print('Invalid choice')
+                    # else:
+                    #     return
             elif user[6].lower() == 'organizer':
                 while True:
                     organizer_menu()

@@ -44,7 +44,7 @@ def get_user_by_login(username, password):
 def set_user_type(conn, username, user_type):
     cur = conn.cursor()
     cur.execute(
-        "UPDATE users SET user_type = %s WHERE username = %s",
+        "UPDATE users SET usertype = %s WHERE username = %s",
         (user_type, username)
     )
     conn.commit()
