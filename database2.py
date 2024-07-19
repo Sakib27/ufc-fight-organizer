@@ -16,7 +16,7 @@ def create_user(conn, user_id, email, username, full_name, hashed_pw, dob):
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO users (user_id, email, username, full_name, password, dob, user_type) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-        (user_id, email, username, full_name, hashed_pw, dob, 'attendee')  # Default user_type as attendee
+        (user_id, email, username, full_name, hashed_pw, dob, 'attendee') 
     )
     conn.commit()
     cursor.close()
@@ -25,7 +25,7 @@ def get_user(conn, username):
     cur = conn.cursor()
     cur.execute(
         "SELECT * FROM users WHERE username = %s",
-        (username,)  # Single-element tuple
+        (username,)
     )
     return cur.fetchone()
 
