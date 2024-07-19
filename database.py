@@ -1,7 +1,7 @@
 # This file handles the database connection and queries 
 
 import psycopg2
-from psycopg2 import connect
+from psycopg2 import connect, sql, DatabaseError
 from getpass import getpass # getpass is a function that will hide the password when the user types it in
 
 
@@ -57,12 +57,34 @@ def get_all_users(conn):
     return cur.fetchall()
 
 def set_shift(conn, userid, eventid, starttime, endtime):
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO Shifts (userID, eventid, starttime, endtime) VALUES (%s, %s, %s, %s)",
-        (userid, eventid, starttime, endtime)
-    )
-    conn.commit()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO Shifts (userID, eventid, starttime, endtime) VALUES (%s, %s, %s, %s)",
+            (userid, eventid, starttime, endtime)
+        )
+        conn.commit()
+    except DatabaseError as e:
+        print(f"Error setting shift: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+    finally:
+        cur.close()
+
+def set_ticket(conn, ticketid, eventid, attendeeid, tickettype = 'general', price = '50'):
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO Tickets (ticketid, eventid, attendeeid, tickettype, price) VALUES (%s, %s, %s, %s, %s)",
+            (ticketid, eventid, attendeeid, tickettype, price)
+        )
+        conn.commit()
+    except DatabaseError as e:
+        print(f"Error setting ticket: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+    finally:
+        cur.close()
 
 def close_connection(conn):
     conn.close() # close the connection

@@ -82,3 +82,26 @@ CREATE TABLE Shifts (
     EndTime TIME(0),
     PRIMARY KEY (UserID, EventID)
 );
+
+CREATE OR REPLACE FUNCTION check_shift_time() 
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if the event has already happened
+    IF NEW.StartTime < NOW() THEN
+        RAISE EXCEPTION 'Cannot set a shift for an event that has already happened.';
+    END IF;
+    
+    -- Check if the shift is less than 72 hours away
+    IF NEW.StartTime < (SELECT EventDate + NEW.StartTime::TIME - INTERVAL '72 hours' 
+                        FROM Events WHERE EventID = NEW.EventID) THEN
+        RAISE EXCEPTION 'Cannot set a shift for a staff member less than 72 hours before the event.';
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_shift_insert
+BEFORE INSERT ON Shifts
+FOR EACH ROW
+EXECUTE FUNCTION check_shift_time();

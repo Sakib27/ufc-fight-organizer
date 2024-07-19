@@ -2,8 +2,15 @@
 
 from prettytable import PrettyTable
 import database
-from database import connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login, set_shift
+from database import connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login, set_shift, set_ticket
 import hashlib
+import random
+import string 
+
+def generate_unique_sequence(length=20):
+    # Generate a random string of `length` characters
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choices(characters, k=length))
 
 # def prompt_login(user, password):
 #     user = input('Username: ')
@@ -57,7 +64,7 @@ def assign_shift(conn):
     starttime = input('Enter the start time of the shift: ')
     endtime = input('Enter the endtime of the shift: ')
     set_shift(conn, userid, eventid, starttime, endtime)
-    print(f'Assigned shift to {userid} from {starttime} to {endtime}')
+    print(f'Assigned shift to {userid} from {starttime} to {endtime}') if set_shift else print('Error assigning shift')
 
 # def approve_shift_swap(conn):
 
@@ -73,11 +80,49 @@ def assign_shift(conn):
 
 # def request_fight(conn):
 
-# def buy_tickets(conn):
+def buy_tickets(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM events"
+    )
+    ticketid = generate_unique_sequence(20)
+    username = input('Cofirm your username: ')
+    user = get_user(conn, username)
+    attendeeid = user[0]
+    events = cur.fetchall()
+    table = PrettyTable(['EventID', 'Date', 'Time'])
+    for event in events:
+        table.add_row([event[0], event[4], event[5]])
+    print(table)
+    print('') # newline
+    eventid = input('Enter the EventID of the event you want to buy tickets for: ')
+    num_tickets = input('Enter the number of tickets you want to buy: ')
+    print('') # newline
+    print(f'You have purchased {num_tickets} tickets for event {eventid}')
+    print('') # newline
+    set_ticket(conn, ticketid, eventid, attendeeid, tickettype = 'general', price = '50')
+    cur.close()
 
 # def view_purchased_tickets(conn):
 
-# def buy_more_tickets(conn):
+def buy_more_tickets(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM events"
+    )
+    events = cur.fetchall()
+    table = PrettyTable(['EventID', 'Date', 'Time'])
+    for event in events:
+        table.add_row([event[0], event[4], event[5]])
+    print(table)
+    print('') # newline
+    event_id = input('Enter the EventID of the event you want to buy tickets for: ')
+    num_tickets = input('Enter the number of tickets you want to buy: ')
+    print('') # newline
+    print(f'You have purchased {num_tickets} tickets for event {event_id}')
+    print('') # newline
+    set_ticket(conn, event_id, num_tickets)
+    cur.close()
 
 # def sell_tickets(conn):
 
