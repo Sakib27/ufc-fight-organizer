@@ -2,7 +2,7 @@
 
 from prettytable import PrettyTable
 import database
-from database import connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login, set_shift, set_ticket
+from database import set_user_id, connect_to_db, get_user, create_user, close_connection, set_user_type, close_connection, get_user_by_login, set_shift, set_ticket
 import hashlib
 import random
 import string 
@@ -11,6 +11,8 @@ def generate_unique_sequence(length=20):
     # Generate a random string of `length` characters
     characters = string.ascii_letters + string.digits
     return ''.join(random.choices(characters, k=length))
+
+
 
 # def prompt_login(user, password):
 #     user = input('Username: ')
@@ -35,22 +37,11 @@ def account_create(conn, usertype='attendee'):
     hashedpw = hashlib.sha256(password.encode()).hexdigest()  # saving the passwords as hashed values in the database
     dob = input('Date of Birth (YYYY-MM-DD): ')
     create_user(conn, userid, email, username, name, hashedpw, dob, usertype)
-    # Directly insert the new user into the users table
-    # cur = conn.cursor()
-    # cur.execute("""
-    #     INSERT INTO users ("UserID", "Email", "Username", "Full_Name", "HashedPW", "dob", "UserType")
-    #     VALUES (%s, %s, %s, %s, %s, %s, %s);
-    # """, (userid, email, username, name, hashedpw, dob, usertype))
     conn.commit()
     cur.close()
     
     print(f'{usertype.capitalize()} account created successfully')
 
-# def authenticate_user(conn, username, password):
-#     user = get_user(conn, username)
-#     if user and user[2] == password: # user[2] is the password
-#         return user
-#     return None
 
 def assign_role(conn):
     username = input('Enter username: ')
@@ -74,11 +65,28 @@ def assign_shift(conn):
 
 # def approve_fight_requests(conn):
 
-# def view_fight_schedule(conn):
+#def view_past_fights(conn):
 
-# def view_upcoming_fights(conn):
+def view_fights(conn):
+    username = input('Confirm your username: ')
+    user = get_user(conn, username)
+    fighterid = user[0]
 
-# def request_fight(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT EventID, FightDate, FightTime, FightLocation FROM events WHERE Fighter1ID = %s OR Fighter2ID = %s",
+        (fighterid, fighterid)
+    )
+    fights = cur.fetchall()
+    # show fights that contain the current user's fighter id
+    table = PrettyTable(['EventID', 'Fight Date', 'Fight Time', 'Fight Location'])
+    for fight in fights:
+        table.add_row([fight[0], fight[1], fight[2], fight[3]])
+    print(table)
+    cur.close()
+
+
+#def request_fight(conn):
 
 def buy_tickets(conn):
     cur = conn.cursor()
@@ -110,25 +118,51 @@ def buy_more_tickets(conn):
     cur.execute(
         "SELECT * FROM events"
     )
+    ticketid = generate_unique_sequence(20)
+    username = input('Cofirm your username: ')
+    user = get_user(conn, username)
+    attendeeid = user[0]
     events = cur.fetchall()
     table = PrettyTable(['EventID', 'Date', 'Time'])
     for event in events:
         table.add_row([event[0], event[4], event[5]])
     print(table)
     print('') # newline
-    event_id = input('Enter the EventID of the event you want to buy tickets for: ')
+    eventid = input('Enter the EventID of the event you want to buy tickets for: ')
     num_tickets = input('Enter the number of tickets you want to buy: ')
     print('') # newline
-    print(f'You have purchased {num_tickets} tickets for event {event_id}')
+    print(f'You have purchased {num_tickets} more tickets for event {eventid}')
     print('') # newline
-    set_ticket(conn, event_id, num_tickets)
+    set_ticket(conn, ticketid, eventid, attendeeid, tickettype = 'general', price = '50')
     cur.close()
 
 # def sell_tickets(conn):
 
-# def view_shifts(conn):
+def view_shifts(conn):
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM StaffShifts")
+        shifts = cur.fetchall()
+        print("\nShifts:")
+        for shift in shifts:            
+            print(f"UserID: {shift[0]}, EventID: {shift[1]}, StartTime: {shift[2]}, EndTime: {shift[3]}, EventDate: {shift[4]}, EventTime: {shift[5]}, Location: {shift[6]}")
+    except psycopg2.DatabaseError as e:
+        print(f"Error viewing shifts: {e}")
+    finally:
+        cur.close()
 
-# def view_venue_assignments(conn):
+def view_venue_assignments(conn):
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM VenueAssignments")
+        assignments = cur.fetchall()
+        print("\nVenue Assignments:")
+        for assignment in assignments:
+            print(f"EventID: {assignment[0]}, EventDate: {assignment[1]}, EventTime: {assignment[2]}, VenueID: {assignment[3]}, VenueName: {assignment[4]}, VenueAddress: {assignment[5]}")
+    except psycopg2.DatabaseError as e:
+        print(f"Error viewing venue assignments: {e}")
+    finally:
+        cur.close()
 
 # def swap_shifts(conn):
 
@@ -170,8 +204,7 @@ def staff_menu():
     while True:
         print('1. View Shifts')
         print('2. View Venue Assignments')
-        print('3. Swap Shifts')
-        print('4. Logout')
+        print('3. Logout')
         print('') # newline
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
@@ -180,8 +213,6 @@ def staff_menu():
         elif choice == '2':
             view_venue_assignments(conn)
         elif choice == '3':
-            swap_shifts(conn)
-        elif choice == '4':
             close_connection(conn)
         else:
             print('Invalid choice')
@@ -235,7 +266,7 @@ def organizer_menu():
 def fighter_menu():
     conn = connect_to_db()
     while True:
-        print('1. View Fight Schedule')
+        print('1. View All Fights')
         print('2. View Upcoming Fights') 
         print('3. Request Fight') #  TODO: make this into a view that appears only if the fighter has more than 10 fights so far
         print('4. Logout')
@@ -243,13 +274,14 @@ def fighter_menu():
         # running the function corresponding to the choice
         choice = input('Enter choice: ')
         if choice == '1':
-            view_fight_schedule(conn)
+            view_fights(conn)
         elif choice == '2':
             view_upcoming_fights(conn)
         elif choice == '3':
             request_fight(conn)
         elif choice == '4':
             close_connection(conn)
+            break
         else:
             print('Invalid choice')
 
@@ -274,6 +306,8 @@ def run_ui():
                     if attendee_choice == '4':
                         break
             elif user[6].lower() == 'staff':
+                userid = user[0]
+                set_user_id(conn, userid)
                 while True:
                     staff_menu()
                     staff_choice = input('Select an option: ')
@@ -311,9 +345,7 @@ def run_ui():
             elif user[6].lower() == 'fighter':
                 while True:
                     fighter_menu()
-                    fighter_choice = input('Select an option: ')
-                    if fighter_choice == '4':
-                        break
+                    break
         else:
             print('Invalid username or password')
     elif choice == '2':

@@ -32,6 +32,12 @@ def get_user(conn, username):
     )
     return cur.fetchone() 
 
+def set_user_id(conn, user_id):
+    cur = conn.cursor()
+    cur.execute("SET app.user_id = %s", (user_id,))
+    conn.commit()
+    cur.close()
+
 def get_user_by_login(username, password):
     conn = connect_to_db()
     cur = conn.cursor()
